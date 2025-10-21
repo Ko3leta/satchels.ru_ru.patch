@@ -3,8 +3,11 @@ package net.rose.satchels.client.tooltip;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
@@ -52,6 +55,17 @@ public record SatchelTooltipComponent(SatchelContentsComponent data) implements 
     @Override
     public void drawItems(TextRenderer textRenderer, int x, int y, int width, int height, DrawContext drawContext) {
         drawContext.drawWrappedText(textRenderer, DESCRIPTION_TEXT, x, y, MAX_WIDTH, 0xFFFFFFFF, true);
+
+        final var slotIndex = SatchelContentsComponent.selectedSlotIndex;
+        if (slotIndex >= 0 && slotIndex < this.data.stacks().size()) {
+            final var itemStack = this.data.stacks().get(slotIndex);
+            Text text = itemStack.getFormattedName();
+            int i = textRenderer.getWidth(text.asOrderedText());
+            int j = x + width / 2 - 12;
+            TooltipComponent tooltipComponent = TooltipComponent.of(text.asOrderedText());
+            drawContext.drawTooltipImmediately(textRenderer, List.of(tooltipComponent), j - i / 2, y - 16 - 2, HoveredTooltipPositioner.INSTANCE, itemStack.get(DataComponentTypes.TOOLTIP_STYLE));
+        }
+
         final var descriptionHeight = getDescriptionHeight(textRenderer);
         y += descriptionHeight;
 
