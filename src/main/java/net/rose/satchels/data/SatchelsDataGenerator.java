@@ -10,5 +10,6 @@ public class SatchelsDataGenerator implements DataGeneratorEntrypoint {
         final var pack = fabricDataGenerator.createPack();
         pack.addProvider(LangProvider::new);
         pack.addProvider(ModelProvider::new);
+        pack.addProvider(ItemTagProvider::new);
     }
 }

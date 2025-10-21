@@ -23,6 +23,7 @@
   "mixins": [
     "satchels.mixins.json"
   ],
+  "accessWidener": "satchels.accesswidener",
   "depends": {
     "fabricloader": ">=${loader_version}",
     "fabric": "*",

@@ -1,9 +1,12 @@
-package net.rose.satchels.common;
+package net.rose.satchels.common.init;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.rose.satchels.common.Satchels;
+import net.rose.satchels.common.data_component.SatchelContentsComponent;
+import net.rose.satchels.common.item.SatchelItem;
 
 import java.util.function.Function;
 
@@ -28,7 +31,12 @@ public class ModItems {
 
     public static Item registerSatchel(String colorName) {
         final var name = colorName.isEmpty() ? "satchel" : colorName + "_satchel";
-        return register(name, Item::new, new Item.Settings().maxCount(1));
+        return register(
+                name, SatchelItem::new,
+                new Item.Settings()
+                        .maxCount(1)
+                        .component(ModDataComponents.SATCHEL_CONTENTS, SatchelContentsComponent.DEFAULT)
+        );
     }
 
     public static Item register(String name, Function<Item.Settings, Item> factory, Item.Settings settings) {

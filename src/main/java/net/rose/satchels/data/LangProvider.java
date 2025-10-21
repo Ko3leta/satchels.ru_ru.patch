@@ -3,7 +3,7 @@ package net.rose.satchels.data;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricLanguageProvider;
 import net.minecraft.registry.RegistryWrapper;
-import net.rose.satchels.common.ModItems;
+import net.rose.satchels.common.init.ModItems;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -31,5 +31,7 @@ public class LangProvider extends FabricLanguageProvider {
         translationBuilder.add(ModItems.PURPLE_SATCHEL, "Purple Satchel");
         translationBuilder.add(ModItems.MAGENTA_SATCHEL, "Magenta Satchel");
         translationBuilder.add(ModItems.PINK_SATCHEL, "Pink Satchel");
+
+        translationBuilder.add("item.satchels.satchel.desc", "Can multiple items of any stack size");
     }
 }
