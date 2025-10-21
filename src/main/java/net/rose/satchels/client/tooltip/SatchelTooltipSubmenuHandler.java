@@ -6,16 +6,16 @@ import net.minecraft.client.input.Scroller;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
-import net.rose.satchels.common.data_component.SatchelContentsComponent;
+
 import net.rose.satchels.common.init.ModItemTags;
 import net.rose.satchels.common.item.SatchelItem;
 
+import static net.rose.satchels.common.data_component.SatchelContentsComponent.selectedSlotIndex;
+
 public class SatchelTooltipSubmenuHandler implements TooltipSubmenuHandler {
-    private final MinecraftClient client;
     private final Scroller scroller;
 
-    public SatchelTooltipSubmenuHandler(MinecraftClient client) {
-        this.client = client;
+    public SatchelTooltipSubmenuHandler(MinecraftClient ignored) {
         this.scroller = new Scroller();
     }
 
@@ -25,48 +25,34 @@ public class SatchelTooltipSubmenuHandler implements TooltipSubmenuHandler {
     }
 
     public boolean onScroll(double horizontal, double vertical, int slotId, ItemStack itemStack) {
-        final var itemStackCount = SatchelItem.getItemStackCount(itemStack);
-        if (itemStackCount == 0) {
-            return false;
-        }
+        final var storedItemStackCount = SatchelItem.getStoredItemStackCount(itemStack);
+        if (storedItemStackCount == 0) return false;
 
         final var scrollDelta = this.scroller.update(horizontal, vertical);
-        final var scrollAmount = scrollDelta.y == 0 ? -scrollDelta.x : scrollDelta.y;
+        final var scrollAmount = scrollDelta.y == 0 ? scrollDelta.x : -scrollDelta.y;
+
         if (scrollAmount != 0) {
-            final var currentSelectedSlot = SatchelItem.getSelectedStackIndex(itemStack);
-            final var cycledSlotIndex = Scroller.scrollCycling(-scrollAmount, SatchelContentsComponent.CURRENT_SELECTED_SLOT_INDEX, itemStackCount);
-            if (SatchelContentsComponent.CURRENT_SELECTED_SLOT_INDEX != cycledSlotIndex) {
-                SatchelContentsComponent.CURRENT_SELECTED_SLOT_INDEX = cycledSlotIndex;
-                // this.sendPacket(itemStack, slotId, cycledSlotIndex);
-            }
+            final var cycledSlotIndex = Scroller.scrollCycling(scrollAmount, selectedSlotIndex, storedItemStackCount);
+            this.setSlot(cycledSlotIndex);
         }
 
         return true;
     }
 
+    @Override
     public void reset(Slot slot) {
-        this.reset(slot.getStack(), slot.id);
+        this.setSlot(-1);
     }
 
-    public void reset(ItemStack item, int slotId) {
-        this.sendPacket(item, slotId, -1);
-    }
-
-    private void sendPacket(ItemStack itemStack, int slotId, int selectedItemIndex) {
-       // if (this.client.getNetworkHandler() != null && selectedItemIndex < SatchelItem.getItemStackCount(itemStack)) {
-       //     SatchelItem.setSelectedStackIndex(itemStack, selectedItemIndex);
-
-       //     if (this.client.player != null) {
-       //         // SatchelItem.onContentChanged(this.client.player);
-       //     }
-
-       //     // ClientPlayNetworking.send(new SatchelItemSelectedC2SPayload(slotId, selectedItemIndex));
-       // }
+    private void setSlot(int selectedItemIndex) {
+        if (selectedSlotIndex != selectedItemIndex) {
+            selectedSlotIndex = selectedItemIndex;
+        }
     }
 
     public void onMouseClick(Slot slot, SlotActionType actionType) {
         if (actionType == SlotActionType.QUICK_MOVE || actionType == SlotActionType.SWAP) {
-            this.reset(slot.getStack(), slot.id);
+            this.setSlot(-1);
         }
     }
 }

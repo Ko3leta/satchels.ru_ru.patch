@@ -36,7 +36,7 @@ public record SatchelTooltipComponent(SatchelContentsComponent data) implements 
 
     @Override
     public int getHeight(TextRenderer textRenderer) {
-        return getDescriptionHeight(textRenderer) + FILL_BAR_HEIGHT + 8 + (!this.data.stacks.isEmpty() ? 24 : 0);
+        return getDescriptionHeight(textRenderer) + FILL_BAR_HEIGHT + 8 + (!this.data.stacks().isEmpty() ? 24 : 0);
     }
 
     @Override
@@ -55,10 +55,10 @@ public record SatchelTooltipComponent(SatchelContentsComponent data) implements 
         final var descriptionHeight = getDescriptionHeight(textRenderer);
         y += descriptionHeight;
 
-        if (!this.data.stacks.isEmpty()) {
+        if (!this.data.stacks().isEmpty()) {
             var seed = 1;
-            for (var i = 0; i < this.data.stacks.size(); i++) {
-                this.drawItem(seed, x - 2 + i * 24, y, this.data.stacks, seed, textRenderer, drawContext);
+            for (var i = 0; i < this.data.stacks().size(); i++) {
+                this.drawItem(seed, x - 2 + i * 24, y, this.data.stacks(), seed, textRenderer, drawContext);
                 seed++;
             }
             y += 24;
@@ -71,7 +71,7 @@ public record SatchelTooltipComponent(SatchelContentsComponent data) implements 
 
     private void drawItem(int index, int x, int y, List<ItemStack> stacks, int seed, TextRenderer textRenderer, DrawContext drawContext) {
         final var slotIndex = stacks.size() - index;
-        final var isSlotSelected = slotIndex == SatchelContentsComponent.CURRENT_SELECTED_SLOT_INDEX;
+        final var isSlotSelected = slotIndex == SatchelContentsComponent.selectedSlotIndex;
         final var itemStack = stacks.get(slotIndex);
 
         final var slotTexture = isSlotSelected ? BUNDLE_SLOT_HIGHLIGHT_BACK_TEXTURE : BUNDLE_SLOT_BACKGROUND_TEXTURE;
@@ -103,7 +103,7 @@ public record SatchelTooltipComponent(SatchelContentsComponent data) implements 
     }
 
     private Optional<Text> getProgressBarLabel() {
-        if (this.data.stacks.isEmpty()) {
+        if (this.data.stacks().isEmpty()) {
             return Optional.of(EMPTY_TEXT);
         }
 

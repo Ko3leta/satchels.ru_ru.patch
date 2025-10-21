@@ -2,7 +2,9 @@ package net.rose.satchels.data;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricLanguageProvider;
+
 import net.minecraft.registry.RegistryWrapper;
+
 import net.rose.satchels.common.init.ModItems;
 
 import java.util.concurrent.CompletableFuture;

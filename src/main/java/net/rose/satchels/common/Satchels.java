@@ -2,13 +2,14 @@ package net.rose.satchels.common;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
+
 import net.minecraft.item.ItemGroups;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
+
 import net.rose.satchels.common.init.ModDataComponents;
 import net.rose.satchels.common.init.ModItemTags;
 import net.rose.satchels.common.init.ModItems;
-import net.rose.satchels.common.init.ModPackets;
 
 public class Satchels implements ModInitializer {
     public static final String MOD_ID = "satchels";
@@ -21,7 +22,6 @@ public class Satchels implements ModInitializer {
     public void onInitialize() {
         ModItems.initialize();
         ModItemTags.initialize();
-        ModPackets.initialize();
         ModDataComponents.initialize();
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.TOOLS).register(fabricItemGroupEntries -> {

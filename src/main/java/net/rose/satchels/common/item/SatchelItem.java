@@ -6,59 +6,21 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipData;
 import net.minecraft.screen.slot.Slot;
-import net.minecraft.text.Text;
 import net.minecraft.util.ClickType;
 
-import net.minecraft.util.Formatting;
 import net.rose.satchels.common.data_component.SatchelContentsComponent;
 import net.rose.satchels.common.init.ModDataComponents;
 
 import java.util.Optional;
 
 public class SatchelItem extends Item {
+    public static final int MAX_ITEM_COUNT = 3;
+
     public SatchelItem(Settings settings) {
         super(settings);
     }
 
-    public static int getItemStackCount(ItemStack itemStack) {
-        final var maybeSatchelComponent = tryGetSatchelComponent(itemStack);
-        if (maybeSatchelComponent.isPresent()) {
-            final var satchelComponent = maybeSatchelComponent.get();
-            return satchelComponent.stacks.size();
-        }
-
-        return 0;
-    }
-
-    public static void setSelectedStackIndex(ItemStack itemStack, int selectedStackIndex) {
-        final var maybeSatchelComponent = tryGetSatchelComponent(itemStack);
-        if (maybeSatchelComponent.isPresent()) {
-            final var satchelComponent = maybeSatchelComponent.get();
-            final var builder = new SatchelContentsComponent.Builder(satchelComponent);
-            builder.setSelectedStackIndex(selectedStackIndex);
-            itemStack.set(ModDataComponents.SATCHEL_CONTENTS, builder.build());
-        }
-    }
-
-    public static int getSelectedStackIndex(ItemStack itemStack) {
-        final var maybeSatchelComponent = tryGetSatchelComponent(itemStack);
-        if (maybeSatchelComponent.isPresent()) {
-            final var satchelComponent = maybeSatchelComponent.get();
-            return satchelComponent.selectedStackIndex;
-        }
-
-        return 0;
-    }
-
-    @Override
-    public Optional<TooltipData> getTooltipData(ItemStack stack) {
-        return Optional.ofNullable(stack.contains(ModDataComponents.SATCHEL_CONTENTS)
-                ? stack.get(ModDataComponents.SATCHEL_CONTENTS)
-                : null
-        );
-    }
-
-    private static Optional<SatchelContentsComponent> tryGetSatchelComponent(ItemStack itemStack) {
+    private static Optional<SatchelContentsComponent> maybeGetSatchelComponent(ItemStack itemStack) {
         if (itemStack.contains(ModDataComponents.SATCHEL_CONTENTS)) {
             return Optional.ofNullable(itemStack.get(ModDataComponents.SATCHEL_CONTENTS));
         }
@@ -66,9 +28,19 @@ public class SatchelItem extends Item {
         return Optional.empty();
     }
 
+    public static int getStoredItemStackCount(ItemStack itemStack) {
+        final var maybeSatchelComponent = maybeGetSatchelComponent(itemStack);
+        if (maybeSatchelComponent.isPresent()) {
+            final var satchelComponent = maybeSatchelComponent.get();
+            return satchelComponent.stacks().size();
+        }
+
+        return 0;
+    }
+
     @Override
     public boolean onStackClicked(ItemStack satchelItemStack, Slot slot, ClickType clickType, PlayerEntity user) {
-        final var maybeSatchelComponent = tryGetSatchelComponent(satchelItemStack);
+        final var maybeSatchelComponent = maybeGetSatchelComponent(satchelItemStack);
         if (maybeSatchelComponent.isPresent()) {
             final var satchelComponent = maybeSatchelComponent.get();
             final var itemStackInSlot = slot.getStack();
@@ -82,7 +54,7 @@ public class SatchelItem extends Item {
                 if (builder.add(itemStackInSlot.copyWithCount(1))) {
                     itemStackInSlot.decrement(1);
                     satchelItemStack.set(ModDataComponents.SATCHEL_CONTENTS, builder.build());
-                    onContentChanged(user);
+                    refreshScreenHandler(user);
                     return true;
                 }
 
@@ -95,7 +67,7 @@ public class SatchelItem extends Item {
                 if (removed.isPresent()) {
                     slot.setStack(removed.get().copy());
                     satchelItemStack.set(ModDataComponents.SATCHEL_CONTENTS, builder.build());
-                    onContentChanged(user);
+                    refreshScreenHandler(user);
                     return true;
                 }
             }
@@ -108,7 +80,7 @@ public class SatchelItem extends Item {
 
     @Override
     public boolean onClicked(ItemStack satchelItemStack, ItemStack otherStack, Slot slot, ClickType clickType, PlayerEntity user, StackReference cursorStackReference) {
-        final var maybeSatchelComponent = tryGetSatchelComponent(satchelItemStack);
+        final var maybeSatchelComponent = maybeGetSatchelComponent(satchelItemStack);
         if (maybeSatchelComponent.isPresent()) {
             final var satchelComponent = maybeSatchelComponent.get();
             final var itemStackInCursor = cursorStackReference.get();
@@ -118,7 +90,7 @@ public class SatchelItem extends Item {
                 if (builder.add(itemStackInCursor.copyWithCount(1))) {
                     itemStackInCursor.decrement(1);
                     satchelItemStack.set(ModDataComponents.SATCHEL_CONTENTS, builder.build());
-                    onContentChanged(user);
+                    refreshScreenHandler(user);
                     return true;
                 }
 
@@ -127,16 +99,11 @@ public class SatchelItem extends Item {
 
             if (clickType == ClickType.RIGHT) {
                 final var builder = new SatchelContentsComponent.Builder(satchelComponent);
-                user.sendMessage(Text.literal("Selected: " + satchelComponent.selectedStackIndex), false);
-                for (var i = 0; i < satchelComponent.stacks.size(); i++) {
-                    final var stack = satchelComponent.stacks.get(i);
-                    user.sendMessage(Text.literal(" - " + stack.getName().getString()).formatted(i == satchelComponent.selectedStackIndex ? Formatting.YELLOW : Formatting.WHITE), false);
-                }
                 final var removed = builder.removeCurrent();
                 if (removed.isPresent()) {
                     cursorStackReference.set(removed.get().copy());
                     satchelItemStack.set(ModDataComponents.SATCHEL_CONTENTS, builder.build());
-                    onContentChanged(user);
+                    refreshScreenHandler(user);
                     return true;
                 }
 
@@ -147,8 +114,15 @@ public class SatchelItem extends Item {
         return false;
     }
 
-    public static void onContentChanged(PlayerEntity user) {
+    private static void refreshScreenHandler(PlayerEntity user) {
         final var screenHandler = user.currentScreenHandler;
-        if (screenHandler != null) screenHandler.onContentChanged(user.getInventory());
+        if (screenHandler != null) {
+            screenHandler.onContentChanged(user.getInventory());
+        }
+    }
+
+    @Override
+    public Optional<TooltipData> getTooltipData(ItemStack itemStack) {
+        return Optional.ofNullable(maybeGetSatchelComponent(itemStack).orElse(null));
     }
 }

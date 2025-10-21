@@ -4,6 +4,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+
 import net.rose.satchels.common.Satchels;
 import net.rose.satchels.common.data_component.SatchelContentsComponent;
 import net.rose.satchels.common.item.SatchelItem;
@@ -29,13 +30,10 @@ public class ModItems {
     public static final Item MAGENTA_SATCHEL = registerSatchel("magenta");
     public static final Item PINK_SATCHEL = registerSatchel("pink");
 
-    public static Item registerSatchel(String colorName) {
-        final var name = colorName.isEmpty() ? "satchel" : colorName + "_satchel";
+    public static Item registerSatchel(String satchelColor) {
         return register(
-                name, SatchelItem::new,
-                new Item.Settings()
-                        .maxCount(1)
-                        .component(ModDataComponents.SATCHEL_CONTENTS, SatchelContentsComponent.DEFAULT)
+                satchelColor.isEmpty() ? "satchel" : satchelColor + "_satchel", SatchelItem::new,
+                new Item.Settings().maxCount(1).component(ModDataComponents.SATCHEL_CONTENTS, SatchelContentsComponent.DEFAULT)
         );
     }
 
@@ -44,5 +42,6 @@ public class ModItems {
         return Items.register(key, factory, settings);
     }
 
-    public static void initialize() {}
+    public static void initialize() {
+    }
 }

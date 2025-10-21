@@ -15,8 +15,6 @@ public class HandledScreenMixin {
     @Inject(method = "init", at = @At("TAIL"))
     private void init$addCustomTooltipSubmenuHandlers(CallbackInfo ci) {
         final var screen = (HandledScreen) (Object) this;
-        TooltipSubmenuHandlers.addAll(builder ->
-                screen.addTooltipSubmenuHandler(builder.apply(screen.client))
-        );
+        TooltipSubmenuHandlers.addAll(builder -> screen.addTooltipSubmenuHandler(builder.apply(screen.client)));
     }
 }
