@@ -7,7 +7,6 @@ import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
@@ -72,7 +71,7 @@ public record SatchelTooltipComponent(SatchelContentsComponent data) implements 
         if (!this.data.stacks().isEmpty()) {
             var seed = 1;
             for (var i = 0; i < this.data.stacks().size(); i++) {
-                this.drawItem(seed, x - 2 + i * 24, y, this.data.stacks(), seed, textRenderer, drawContext);
+                drawItem(seed, x - 2 + i * 24, y, this.data.stacks(), seed, textRenderer, drawContext);
                 seed++;
             }
             y += 24;
@@ -83,8 +82,8 @@ public record SatchelTooltipComponent(SatchelContentsComponent data) implements 
         this.drawProgressBar(x, y, textRenderer, drawContext);
     }
 
-    private void drawItem(int index, int x, int y, List<ItemStack> stacks, int seed, TextRenderer textRenderer, DrawContext drawContext) {
-        final var slotIndex = stacks.size() - index;
+    public static void drawItem(int index, int x, int y, List<ItemStack> stacks, int seed, TextRenderer textRenderer, DrawContext drawContext) {
+        final var slotIndex = index - 1;
         final var isSlotSelected = slotIndex == SatchelContentsComponent.selectedSlotIndex;
         final var itemStack = stacks.get(slotIndex);
 

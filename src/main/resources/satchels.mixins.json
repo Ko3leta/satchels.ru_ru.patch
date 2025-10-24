@@ -6,7 +6,9 @@
   "mixins": [
   ],
   "client": [
-    "HandledScreenMixin"
+    "HandledScreenMixin",
+    "MinecraftClientMixin",
+    "MouseMixin"
   ],
   "injectors": {
     "defaultRequire": 1

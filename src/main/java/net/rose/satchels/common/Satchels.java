@@ -3,6 +3,7 @@ package net.rose.satchels.common;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
@@ -10,6 +11,7 @@ import net.minecraft.util.Identifier;
 import net.rose.satchels.common.init.ModDataComponents;
 import net.rose.satchels.common.init.ModItemTags;
 import net.rose.satchels.common.init.ModItems;
+import net.rose.satchels.common.networking.SatchelSelectedSlotS2CPayload;
 
 public class Satchels implements ModInitializer {
     public static final String MOD_ID = "satchels";
@@ -23,6 +25,8 @@ public class Satchels implements ModInitializer {
         ModItems.initialize();
         ModItemTags.initialize();
         ModDataComponents.initialize();
+
+        PayloadTypeRegistry.playS2C().register(SatchelSelectedSlotS2CPayload.ID, SatchelSelectedSlotS2CPayload.CODEC);
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.TOOLS).register(fabricItemGroupEntries -> {
             fabricItemGroupEntries.addAfter(

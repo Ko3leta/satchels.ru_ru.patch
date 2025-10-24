@@ -29,7 +29,7 @@ public class SatchelTooltipSubmenuHandler implements TooltipSubmenuHandler {
         if (storedItemStackCount == 0) return false;
 
         final var scrollDelta = this.scroller.update(horizontal, vertical);
-        final var scrollAmount = scrollDelta.y == 0 ? scrollDelta.x : -scrollDelta.y;
+        final var scrollAmount = scrollDelta.y == 0 ? -scrollDelta.x : scrollDelta.y;
 
         if (scrollAmount != 0) {
             final var cycledSlotIndex = Scroller.scrollCycling(scrollAmount, selectedSlotIndex, storedItemStackCount);
