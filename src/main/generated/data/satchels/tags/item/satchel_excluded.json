@@ -1,0 +1,9 @@
+{
+  "values": [
+    "#satchels:satchels",
+    {
+      "id": "#minecraft:shulker_boxes",
+      "required": false
+    }
+  ]
+}

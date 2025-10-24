@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper;
 
+import net.minecraft.registry.tag.ItemTags;
 import net.rose.satchels.common.init.ModItemTags;
 import net.rose.satchels.common.init.ModItems;
 
@@ -36,6 +37,11 @@ public class ItemTagProvider extends FabricTagProvider.ItemTagProvider {
                 .add(Registries.ITEM.getId(ModItems.PURPLE_SATCHEL))
                 .add(Registries.ITEM.getId(ModItems.MAGENTA_SATCHEL))
                 .add(Registries.ITEM.getId(ModItems.PINK_SATCHEL))
+                .build();
+
+        getTagBuilder(ModItemTags.SATCHEL_EXCLUDED)
+                .addTag(ModItemTags.SATCHELS.id())
+                .addOptionalTag(ItemTags.SHULKER_BOXES.id())
                 .build();
     }
 }

@@ -82,7 +82,7 @@ public record SatchelContentsComponent(List<ItemStack> stacks) implements Toolti
         }
 
         public boolean add(ItemStack stack) {
-            if (stack.isEmpty() || this.stacks.size() >= SatchelItem.MAX_ITEM_COUNT || stack.isIn(ModItemTags.SATCHELS)) {
+            if (stack.isEmpty() || this.stacks.size() >= SatchelItem.MAX_ITEM_COUNT || stack.isIn(ModItemTags.SATCHEL_EXCLUDED)) {
                 return false;
             }
 
