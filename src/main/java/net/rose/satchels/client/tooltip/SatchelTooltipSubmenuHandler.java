@@ -7,6 +7,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.math.MathHelper;
 import net.rose.satchels.common.init.ModItemTags;
 import net.rose.satchels.common.item.SatchelItem;
 
@@ -48,6 +50,8 @@ public class SatchelTooltipSubmenuHandler implements TooltipSubmenuHandler {
         if (selectedSlotIndex != selectedItemIndex) {
             selectedSlotIndex = selectedItemIndex;
         }
+
+        SatchelItem.playScrollSound();
     }
 
     public void onMouseClick(Slot slot, SlotActionType actionType) {

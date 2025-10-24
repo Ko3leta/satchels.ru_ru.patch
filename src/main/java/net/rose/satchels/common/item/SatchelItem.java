@@ -1,6 +1,7 @@
 package net.rose.satchels.common.item;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -12,15 +13,19 @@ import net.minecraft.item.tooltip.TooltipData;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ClickType;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 import net.rose.satchels.common.data_component.SatchelContentsComponent;
 import net.rose.satchels.common.init.ModDataComponents;
 import net.rose.satchels.common.init.ModItemTags;
 import net.rose.satchels.common.networking.SatchelSelectedSlotS2CPayload;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -65,6 +70,35 @@ public class SatchelItem extends Item {
 
     // endregion
 
+    // region Sounds
+
+    public static void playInsertSound(PlayerEntity user, boolean failed) {
+        user.playSound(
+                failed ? SoundEvents.ITEM_BUNDLE_INSERT_FAIL : SoundEvents.ENTITY_HORSE_SADDLE.value(),
+                0.5F, MathHelper.nextFloat(user.getRandom(), 0.98F, 1.02F)
+        );
+    }
+
+    public static void playRemoveSound(PlayerEntity user) {
+        user.playSound(
+                SoundEvents.ITEM_ARMOR_EQUIP_LEATHER.value(),
+                0.75F, MathHelper.nextFloat(user.getRandom(), 1.15F, 1.25F)
+        );
+    }
+
+    public static void playScrollSound() {
+        // final var clientPlayer = MinecraftClient.getInstance().player;
+        //
+        // if (clientPlayer != null) {
+        //     clientPlayer.playSound(
+        //             SoundEvents.ENTITY_ITEM_PICKUP,
+        //             0.3F, MathHelper.nextFloat(clientPlayer.getRandom(), 0.95F, 1.05F)
+        //     );
+        // }
+    }
+
+    // endregion
+
     // region In Inventory Behaviour
 
     @Override
@@ -84,9 +118,11 @@ public class SatchelItem extends Item {
                     itemStackInSlot.decrement(1);
                     satchelItemStack.set(ModDataComponents.SATCHEL_CONTENTS, builder.build());
                     refreshScreenHandler(user);
+                    playInsertSound(user, false);
                     return true;
                 }
 
+                playInsertSound(user, true);
                 return false;
             }
 
@@ -97,6 +133,7 @@ public class SatchelItem extends Item {
                     slot.setStack(removed.get().copy());
                     satchelItemStack.set(ModDataComponents.SATCHEL_CONTENTS, builder.build());
                     refreshScreenHandler(user);
+                    playRemoveSound(user);
                     return true;
                 }
             }
@@ -120,9 +157,12 @@ public class SatchelItem extends Item {
                     itemStackInCursor.decrement(1);
                     satchelItemStack.set(ModDataComponents.SATCHEL_CONTENTS, builder.build());
                     refreshScreenHandler(user);
+                    user.playSound(SoundEvents.ITEM_BUNDLE_INSERT, 1, MathHelper.nextFloat(user.getRandom(), 0.98F, 1.02F));
+                    playInsertSound(user, false);
                     return true;
                 }
 
+                playInsertSound(user, true);
                 return false;
             }
 
@@ -133,6 +173,7 @@ public class SatchelItem extends Item {
                     cursorStackReference.set(removed.get().copy());
                     satchelItemStack.set(ModDataComponents.SATCHEL_CONTENTS, builder.build());
                     refreshScreenHandler(user);
+                    playRemoveSound(user);
                     return true;
                 }
 
@@ -212,6 +253,14 @@ public class SatchelItem extends Item {
                     user.giveItemStack(removed.get().copy());
                     satchelItemStack.set(ModDataComponents.SATCHEL_CONTENTS, builder.build());
                     refreshScreenHandler(user);
+
+                    world.playSound(
+                            null, user.getBlockPos(),
+                            SoundEvents.ITEM_ARMOR_EQUIP_LEATHER.value(),
+                            SoundCategory.PLAYERS,
+                            0.75F, MathHelper.nextFloat(user.getRandom(), 1.15F, 1.25F)
+                    );
+
                     return ActionResult.SUCCESS;
                 }
             }
@@ -219,6 +268,13 @@ public class SatchelItem extends Item {
             return ActionResult.FAIL;
         } else {
             SatchelContentsComponent.selectedSlotIndex = 0;
+
+            world.playSound(
+                    null, user.getBlockPos(),
+                    SoundEvents.ITEM_BUNDLE_DROP_CONTENTS,
+                    SoundCategory.PLAYERS,
+                    0.9F, MathHelper.nextFloat(user.getRandom(), 0.98F, 1.02F)
+            );
         }
 
         useInventoryItemStack = satchelItemStack;
