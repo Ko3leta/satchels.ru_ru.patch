@@ -42,6 +42,7 @@ public class ItemTagProvider extends FabricTagProvider.ItemTagProvider {
         getTagBuilder(ModItemTags.SATCHEL_EXCLUDED)
                 .addTag(ModItemTags.SATCHELS.id())
                 .addOptionalTag(ItemTags.SHULKER_BOXES.id())
+                .addOptionalTag(ItemTags.BUNDLES.id())
                 .build();
     }
 }

@@ -15,6 +15,9 @@ import net.rose.satchels.common.networking.SatchelSelectedSlotS2CPayload;
 
 public class Satchels implements ModInitializer {
     public static final String MOD_ID = "satchels";
+    public static Identifier id(String identifier) {
+        return Identifier.of(MOD_ID, identifier);
+    }
 
     public static Identifier identifier(String path) {
         return Identifier.of(MOD_ID, path);

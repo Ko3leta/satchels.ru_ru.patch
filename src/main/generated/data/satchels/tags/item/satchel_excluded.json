@@ -4,6 +4,10 @@
     {
       "id": "#minecraft:shulker_boxes",
       "required": false
+    },
+    {
+      "id": "#minecraft:bundles",
+      "required": false
     }
   ]
 }

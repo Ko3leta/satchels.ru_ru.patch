@@ -4,7 +4,7 @@
   "version": "${version}",
   "name": "Satchels",
   "description": "",
-  "authors": [],
+  "authors": ["Rosenoire", "Elysieon"],
   "contact": {},
   "license": "All-Rights-Reserved",
   "icon": "assets/satchels/icon.png",
