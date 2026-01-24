@@ -19,6 +19,8 @@ import net.rose.satchels.common.item.SatchelItem;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 @Environment(EnvType.CLIENT)
 public class SatchelSelectedItemModel implements ItemModel {
     static final ItemModel INSTANCE = new SatchelSelectedItemModel();
@@ -26,12 +28,12 @@ public class SatchelSelectedItemModel implements ItemModel {
     public void update(ItemRenderState state, ItemStack itemStack, ItemModelManager resolver, ItemDisplayContext displayContext, @Nullable ClientWorld world, @Nullable HeldItemContext heldItemContext, int seed) {
         state.addModelKey(this);
 
-        final var component = SatchelItem.getSatchelDataComponent(itemStack);
+        SatchelContentsDataComponent component = SatchelItem.getSatchelDataComponent(itemStack);
         if (component != null) {
-            final var stacks = component.stacks();
+            List<ItemStack> stacks = component.stacks();
 
             if (SatchelContentsDataComponent.selectedSlotIndex >= 0 && SatchelContentsDataComponent.selectedSlotIndex < stacks.size()) {
-                final var stack = stacks.get(SatchelContentsDataComponent.selectedSlotIndex);
+                ItemStack stack = stacks.get(SatchelContentsDataComponent.selectedSlotIndex);
                 if (!itemStack.isEmpty()) {
                     resolver.update(state, stack, displayContext, world, heldItemContext, seed);
                 }

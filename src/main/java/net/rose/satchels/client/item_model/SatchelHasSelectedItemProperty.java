@@ -15,14 +15,16 @@ import net.rose.satchels.common.data_component.SatchelContentsDataComponent;
 import net.rose.satchels.common.item.SatchelItem;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 @Environment(EnvType.CLIENT)
 public record SatchelHasSelectedItemProperty() implements BooleanProperty {
     public static final MapCodec<SatchelHasSelectedItemProperty> CODEC = MapCodec.unit(new SatchelHasSelectedItemProperty());
 
     public boolean test(ItemStack itemStack, @Nullable ClientWorld world, @Nullable LivingEntity entity, int seed, ItemDisplayContext displayContext) {
-        final var component = SatchelItem.getSatchelDataComponent(itemStack);
+        SatchelContentsDataComponent component = SatchelItem.getSatchelDataComponent(itemStack);
         if (component != null) {
-            final var stacks = component.stacks();
+            List<ItemStack> stacks = component.stacks();
 
             if (SatchelContentsDataComponent.selectedSlotIndex >= 0 && SatchelContentsDataComponent.selectedSlotIndex < stacks.size()) {
                 return !itemStack.isEmpty();

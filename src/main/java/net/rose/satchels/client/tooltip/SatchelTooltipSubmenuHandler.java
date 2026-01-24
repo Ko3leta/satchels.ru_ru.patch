@@ -9,6 +9,7 @@ import net.minecraft.screen.slot.SlotActionType;
 
 import net.rose.satchels.common.init.ModItemTags;
 import net.rose.satchels.common.item.SatchelItem;
+import org.joml.Vector2i;
 
 import static net.rose.satchels.common.data_component.SatchelContentsDataComponent.selectedSlotIndex;
 
@@ -25,14 +26,14 @@ public class SatchelTooltipSubmenuHandler implements TooltipSubmenuHandler {
     }
 
     public boolean onScroll(double horizontal, double vertical, int slotId, ItemStack itemStack) {
-        final var storedItemStackCount = SatchelItem.getStoredItemStackCount(itemStack);
+        int storedItemStackCount = SatchelItem.getStoredItemStackCount(itemStack);
         if (storedItemStackCount == 0) return false;
 
-        final var scrollDelta = this.scroller.update(horizontal, vertical);
-        final var scrollAmount = scrollDelta.y == 0 ? -scrollDelta.x : scrollDelta.y;
+        Vector2i scrollDelta = this.scroller.update(horizontal, vertical);
+        int scrollAmount = scrollDelta.y == 0 ? -scrollDelta.x : scrollDelta.y;
 
         if (scrollAmount != 0) {
-            final var cycledSlotIndex = Scroller.scrollCycling(scrollAmount, selectedSlotIndex, storedItemStackCount);
+            int cycledSlotIndex = Scroller.scrollCycling(scrollAmount, selectedSlotIndex, storedItemStackCount);
             this.setSlot(cycledSlotIndex);
         }
 

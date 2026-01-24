@@ -12,6 +12,7 @@ import net.minecraft.util.math.MathHelper;
 
 import net.rose.satchels.common.init.ModItemTags;
 import net.rose.satchels.common.item.SatchelItem;
+import org.jspecify.annotations.NonNull;
 
 import java.util.*;
 
@@ -26,6 +27,7 @@ public record SatchelContentsDataComponent(List<ItemStack> stacks) implements To
                     .group(ItemStack.CODEC.listOf().fieldOf("stacks").forGetter(SatchelContentsDataComponent::stacks))
                     .apply(instance, SatchelContentsDataComponent::new)
             ));
+
     public static final PacketCodec<RegistryByteBuf, SatchelContentsDataComponent> PACKET_CODEC = PacketCodec.of(
             (value, buf) -> ItemStack.PACKET_CODEC.collect(PacketCodecs.toList()).encode(buf, value.stacks),
             buf -> new SatchelContentsDataComponent(ItemStack.PACKET_CODEC.collect(PacketCodecs.toList()).decode(buf))
@@ -35,28 +37,18 @@ public record SatchelContentsDataComponent(List<ItemStack> stacks) implements To
 
     // region Implementation
 
-    public String toString() {
-        return "SatchelContents" + this.stacks;
+    public @NonNull String toString() {
+        return "SatchelContents " + this.stacks;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) {
-            return true;
-        }
+        if (obj == this) return true;
+        if (!(obj instanceof SatchelContentsDataComponent(List<ItemStack> otherStacks))) return false;
+        if (this.stacks.size() != otherStacks.size()) return false;
 
-        if (!(obj instanceof SatchelContentsDataComponent(List<ItemStack> otherStacks))) {
-            return false;
-        }
-
-        if (this.stacks.size() != otherStacks.size()) {
-            return false;
-        }
-
-        for (var i = 0; i < this.stacks.size(); i++) {
-            if (!ItemStack.areEqual(this.stacks.get(i), otherStacks.get(i))) {
-                return false;
-            }
+        for (int i = 0; i < this.stacks.size(); i++) {
+            if (!ItemStack.areEqual(this.stacks.get(i), otherStacks.get(i))) return false;
         }
 
         return true;
@@ -95,8 +87,8 @@ public record SatchelContentsDataComponent(List<ItemStack> stacks) implements To
                 return Optional.empty();
             }
 
-            final var clampedIndex = MathHelper.clamp(selectedSlotIndex, 0, this.stacks.size() - 1);
-            final var itemStack = this.stacks.get(clampedIndex).copy();
+            int clampedIndex = MathHelper.clamp(selectedSlotIndex, 0, this.stacks.size() - 1);
+            ItemStack itemStack = this.stacks.get(clampedIndex).copy();
             this.stacks.remove(clampedIndex);
             return Optional.of(itemStack);
         }

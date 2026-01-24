@@ -25,7 +25,7 @@ public class SatchelsClient implements ClientModInitializer {
 
         HudElementRegistry.addLast(Satchels.id("satchel_use_inventory"), new SatchelUseInventoryHudElement());
 
-        ClientPlayNetworking.registerGlobalReceiver(SatchelSelectedSlotS2CPayload.ID, (payload, context) -> SatchelContentsDataComponent.selectedSlotIndex = payload.selectedItemSlot());
+        ClientPlayNetworking.registerGlobalReceiver(SatchelSelectedSlotS2CPayload.ID, SatchelSelectedSlotS2CPayload::receive);
 
         ItemModelTypes.ID_MAPPER.put(Satchels.id("satchel/selected_item"), SatchelSelectedItemModel.Unbaked.CODEC);
         BooleanProperties.ID_MAPPER.put(Satchels.id("satchel/has_selected_item"), SatchelHasSelectedItemProperty.CODEC);
