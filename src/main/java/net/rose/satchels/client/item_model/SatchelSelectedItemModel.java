@@ -19,8 +19,6 @@ import net.rose.satchels.common.item.SatchelItem;
 
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-
 @Environment(EnvType.CLIENT)
 public class SatchelSelectedItemModel implements ItemModel {
     static final ItemModel INSTANCE = new SatchelSelectedItemModel();
@@ -29,14 +27,10 @@ public class SatchelSelectedItemModel implements ItemModel {
         state.addModelKey(this);
 
         SatchelContentsDataComponent component = SatchelItem.getSatchelDataComponent(itemStack);
-        if (component != null) {
-            List<ItemStack> stacks = component.stacks();
-
-            if (SatchelContentsDataComponent.selectedSlotIndex >= 0 && SatchelContentsDataComponent.selectedSlotIndex < stacks.size()) {
-                ItemStack stack = stacks.get(SatchelContentsDataComponent.selectedSlotIndex);
-                if (!itemStack.isEmpty()) {
-                    resolver.update(state, stack, displayContext, world, heldItemContext, seed);
-                }
+        if (component != null && component.selectedSlotIndex() >= 0 && component.selectedSlotIndex() < component.stacks().size()) {
+            if (!itemStack.isEmpty()) {
+                ItemStack stack = component.stacks().get(component.selectedSlotIndex());
+                resolver.update(state, stack, displayContext, world, heldItemContext, seed);
             }
         }
     }

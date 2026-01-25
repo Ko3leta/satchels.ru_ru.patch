@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
 import net.rose.satchels.common.init.ModDataComponents;
 import net.rose.satchels.common.init.ModItemTags;
 import net.rose.satchels.common.init.ModItems;
-import net.rose.satchels.common.networking.SatchelSelectedSlotS2CPayload;
+import net.rose.satchels.common.networking.SetInspectedItemStackS2C;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +29,7 @@ public class Satchels implements ModInitializer {
         ModItemTags.initialize();
         ModDataComponents.initialize();
 
-        PayloadTypeRegistry.playS2C().register(SatchelSelectedSlotS2CPayload.ID, SatchelSelectedSlotS2CPayload.CODEC);
+        PayloadTypeRegistry.playS2C().register(SetInspectedItemStackS2C.ID, SetInspectedItemStackS2C.CODEC);
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.TOOLS).register(fabricItemGroupEntries -> {
             fabricItemGroupEntries.addAfter(

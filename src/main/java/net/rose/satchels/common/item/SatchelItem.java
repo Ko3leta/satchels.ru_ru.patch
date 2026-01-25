@@ -1,6 +1,6 @@
 package net.rose.satchels.common.item;
 
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.collectively.geode.core.math;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
@@ -12,13 +12,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipData;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ClickType;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -26,7 +26,6 @@ import net.minecraft.world.World;
 import net.rose.satchels.common.data_component.SatchelContentsDataComponent;
 import net.rose.satchels.common.init.ModDataComponents;
 import net.rose.satchels.common.init.ModItemTags;
-import net.rose.satchels.common.networking.SatchelSelectedSlotS2CPayload;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -54,7 +53,9 @@ public class SatchelItem extends Item {
 
     private static void refreshScreenHandler(PlayerEntity user) {
         ScreenHandler screenHandler = user.currentScreenHandler;
-        if (screenHandler != null) screenHandler.onContentChanged(user.getInventory());
+        if (screenHandler != null) {
+            screenHandler.onContentChanged(user.getInventory());
+        }
     }
 
     // endregion
@@ -77,8 +78,12 @@ public class SatchelItem extends Item {
 
     @Override
     public boolean onStackClicked(ItemStack itemStack, Slot slot, ClickType clickType, PlayerEntity user) {
-        SatchelContentsDataComponent component = getSatchelDataComponent(itemStack);
-        if (component == null) return false;
+        // When a satchel item is clicked using another stack.
+
+        SatchelContentsDataComponent currentComponent = getSatchelDataComponent(itemStack);
+        if (currentComponent == null) {
+            return false;
+        }
 
         ItemStack slotItemStack = slot.getStack();
 
@@ -88,13 +93,18 @@ public class SatchelItem extends Item {
                 return false;
             }
 
-            SatchelContentsDataComponent.Builder builder = new SatchelContentsDataComponent.Builder(component);
-            if (builder.add(slotItemStack.copyWithCount(1))) {
-                slotItemStack.decrement(1);
+            SatchelContentsDataComponent.Builder builder = new SatchelContentsDataComponent.Builder(currentComponent);
+            // The amount of items copied.
+            int copiedStackSize = math.min(SatchelContentsDataComponent.MAX_STACK_SIZE, slotItemStack.getCount());
+            if (builder.add(slotItemStack.copyWithCount(copiedStackSize))) {
+                slotItemStack.decrement(copiedStackSize);
+
+                builder.setSelectedSlotIndex(-1);
                 itemStack.set(ModDataComponents.SATCHEL_CONTENTS, builder.build());
+
                 refreshScreenHandler(user);
                 playInsertSound(user, false);
-                SatchelContentsDataComponent.selectedSlotIndex = -1;
+
                 return true;
             }
 
@@ -104,15 +114,18 @@ public class SatchelItem extends Item {
 
         // Extract from satchel.
         if (slot.getStack().isEmpty()) {
-            SatchelContentsDataComponent.Builder builder = new SatchelContentsDataComponent.Builder(component);
+            SatchelContentsDataComponent.Builder builder = new SatchelContentsDataComponent.Builder(currentComponent);
             Optional<ItemStack> removed = builder.removeCurrent();
 
             if (removed.isPresent()) {
                 slot.setStack(removed.get().copy());
+
+                builder.setSelectedSlotIndex(-1);
                 itemStack.set(ModDataComponents.SATCHEL_CONTENTS, builder.build());
+
                 refreshScreenHandler(user);
                 playRemoveSound(user);
-                SatchelContentsDataComponent.selectedSlotIndex = -1;
+
                 return true;
             }
         }
@@ -123,36 +136,47 @@ public class SatchelItem extends Item {
 
     @Override
     public boolean onClicked(ItemStack satchelItemStack, ItemStack otherStack, Slot slot, ClickType clickType, PlayerEntity user, StackReference cursorStackReference) {
-        SatchelContentsDataComponent component = getSatchelDataComponent(satchelItemStack);
-        if (component == null) return false;
+        // When another stack is clicked using a satchel.
+
+        SatchelContentsDataComponent currentComponent = getSatchelDataComponent(satchelItemStack);
+        if (currentComponent == null) {
+            return false;
+        }
 
         ItemStack itemStackInCursor = cursorStackReference.get();
 
         if (!itemStackInCursor.isEmpty()) {
-            SatchelContentsDataComponent.Builder builder = new SatchelContentsDataComponent.Builder(component);
-            if (builder.add(itemStackInCursor.copyWithCount(1))) {
-                itemStackInCursor.decrement(1);
+            SatchelContentsDataComponent.Builder builder = new SatchelContentsDataComponent.Builder(currentComponent);
+            // The amount of items copied.
+            int copiedStackSize = math.min(SatchelContentsDataComponent.MAX_STACK_SIZE, itemStackInCursor.getCount());
+            if (builder.add(itemStackInCursor.copyWithCount(copiedStackSize))) {
+                itemStackInCursor.decrement(copiedStackSize);
+
+                builder.setSelectedSlotIndex(-1);
                 satchelItemStack.set(ModDataComponents.SATCHEL_CONTENTS, builder.build());
+
                 refreshScreenHandler(user);
-                user.playSound(SoundEvents.ITEM_BUNDLE_INSERT, 1, MathHelper.nextFloat(user.getRandom(), 0.98F, 1.02F));
                 playInsertSound(user, false);
-                SatchelContentsDataComponent.selectedSlotIndex = -1;
+
                 return true;
             }
 
             playInsertSound(user, true);
-            return false;
+            return true;
         }
 
         if (clickType == ClickType.RIGHT) {
-            SatchelContentsDataComponent.Builder builder = new SatchelContentsDataComponent.Builder(component);
+            SatchelContentsDataComponent.Builder builder = new SatchelContentsDataComponent.Builder(currentComponent);
             Optional<ItemStack> removed = builder.removeCurrent();
             if (removed.isPresent()) {
                 cursorStackReference.set(removed.get().copy());
+
+                builder.setSelectedSlotIndex(-1);
                 satchelItemStack.set(ModDataComponents.SATCHEL_CONTENTS, builder.build());
+
                 refreshScreenHandler(user);
                 playRemoveSound(user);
-                SatchelContentsDataComponent.selectedSlotIndex = -1;
+
                 return true;
             }
 
@@ -198,68 +222,80 @@ public class SatchelItem extends Item {
 
     // region R-Click Inventory
 
-    public static boolean isUseInventoryOpen = false;
-    public static ItemStack useInventoryItemStack = null;
-    private static int previousSelectedSlotIndex;
+    /// CLIENT ONLY!!
+    // public static ItemStack inspectedItemStack;
 
     @Override
     public ActionResult use(World world, PlayerEntity user, Hand hand) {
-        if (!world.isClient()) {
+        if (hand != Hand.MAIN_HAND) {
             return ActionResult.PASS;
         }
 
-        useInventoryItemStack = null;
-        isUseInventoryOpen = !isUseInventoryOpen;
         ItemStack satchelItemStack = user.getStackInHand(hand);
+        SatchelContentsDataComponent currentComponent = getSatchelDataComponent(satchelItemStack);
 
-        if (!isUseInventoryOpen) {
-            SatchelContentsDataComponent satchelComponent = getSatchelDataComponent(satchelItemStack);
-            if (satchelComponent != null) {
-                SatchelContentsDataComponent.Builder builder = new SatchelContentsDataComponent.Builder(satchelComponent);
+        if (currentComponent != null) {
+            SatchelContentsDataComponent.Builder builder = new SatchelContentsDataComponent.Builder(currentComponent);
+            builder.setOpen(!builder.isOpen());
+            satchelItemStack.set(ModDataComponents.SATCHEL_CONTENTS, builder.build());
+
+            if (!builder.isOpen()) {
                 Optional<ItemStack> removed = builder.removeCurrent();
                 if (removed.isPresent()) {
-                    user.giveItemStack(removed.get().copy());
-                    satchelItemStack.set(ModDataComponents.SATCHEL_CONTENTS, builder.build());
-                    refreshScreenHandler(user);
+                    user.giveOrDropStack(removed.get().copy());
 
+                    builder.setSelectedSlotIndex(-1);
+                    satchelItemStack.set(ModDataComponents.SATCHEL_CONTENTS, builder.build());
+                    user.setStackInHand(hand, satchelItemStack);
+
+                    refreshScreenHandler(user);
                     user.playSound(SoundEvents.ITEM_ARMOR_EQUIP_LEATHER.value(), 0.75F, MathHelper.nextFloat(user.getRandom(), 1.15F, 1.25F));
 
-                    SatchelContentsDataComponent.selectedSlotIndex = -1;
                     return ActionResult.SUCCESS;
                 }
+
+                satchelItemStack.set(ModDataComponents.SATCHEL_CONTENTS, builder.build());
+                return ActionResult.FAIL;
             }
 
-            return ActionResult.FAIL;
+            builder.setSelectedSlotIndex(0);
+            satchelItemStack.set(ModDataComponents.SATCHEL_CONTENTS, builder.build());
+            user.setStackInHand(hand, satchelItemStack);
+
+            if (currentComponent.stacks().isEmpty()) {
+                return ActionResult.FAIL;
+            }
+
+            user.playSound(SoundEvents.ITEM_BUNDLE_DROP_CONTENTS, 0.9F, MathHelper.nextFloat(user.getRandom(), 0.98F, 1.02F));
+
+            return ActionResult.SUCCESS;
         }
 
-        SatchelContentsDataComponent.selectedSlotIndex = 0;
-
-        user.playSound(SoundEvents.ITEM_BUNDLE_DROP_CONTENTS, 0.9F, MathHelper.nextFloat(user.getRandom(), 0.98F, 1.02F));
-        useInventoryItemStack = satchelItemStack;
-        return ActionResult.SUCCESS;
+        return ActionResult.FAIL;
     }
 
     @Override
     public void inventoryTick(ItemStack stack, ServerWorld world, Entity entity, @Nullable EquipmentSlot slot) {
-        if (!isUseInventoryOpen) {
-            return;
-        }
+        SatchelContentsDataComponent currentComponent = getSatchelDataComponent(stack);
 
-        if (entity instanceof LivingEntity livingEntity) {
-            if (!livingEntity.getMainHandStack().isIn(ModItemTags.SATCHELS) && !livingEntity.getOffHandStack().isIn(ModItemTags.SATCHELS)) {
-                isUseInventoryOpen = false;
-                useInventoryItemStack = null;
-                SatchelContentsDataComponent.selectedSlotIndex = 0;
+        if (currentComponent != null) {
+            if (!currentComponent.isOpen()) {
+                return;
+            }
+
+            boolean hasChanged = false;
+            SatchelContentsDataComponent.Builder builder = new SatchelContentsDataComponent.Builder(currentComponent);
+
+            if (builder.previousSelectedSlotIndex() != builder.selectedSlotIndex()) {
+                builder.setPreviousSelectedSlotIndex(builder.selectedSlotIndex());
+                hasChanged = true;
+            }
+
+            if (hasChanged) {
+                currentComponent = builder.build();
+                stack.set(ModDataComponents.SATCHEL_CONTENTS, currentComponent);
             }
         }
-
-        if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
-            if (previousSelectedSlotIndex != SatchelContentsDataComponent.selectedSlotIndex) {
-                ServerPlayNetworking.send(serverPlayerEntity, new SatchelSelectedSlotS2CPayload(SatchelContentsDataComponent.selectedSlotIndex));
-            }
-        }
-
-        previousSelectedSlotIndex = SatchelContentsDataComponent.selectedSlotIndex;
     }
 
     // endregion

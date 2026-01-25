@@ -55,9 +55,9 @@ public record SatchelTooltipComponent(SatchelContentsDataComponent data) impleme
     public void drawItems(TextRenderer textRenderer, int x, int y, int width, int height, DrawContext drawContext) {
         drawContext.drawWrappedText(textRenderer, DESCRIPTION_TEXT, x, y, MAX_WIDTH, 0xFFFFFFFF, true);
 
-        int slotIndex = SatchelContentsDataComponent.selectedSlotIndex;
-        if (slotIndex >= 0 && slotIndex < this.data.stacks().size()) {
-            ItemStack itemStack = this.data.stacks().get(slotIndex);
+        int slotIndex = data.selectedSlotIndex();
+        if (slotIndex >= 0 && slotIndex < data.stacks().size()) {
+            ItemStack itemStack = data.stacks().get(slotIndex);
             Text text = itemStack.getFormattedName();
             int i = textRenderer.getWidth(text.asOrderedText());
             int j = x + width / 2 - 12;
@@ -71,7 +71,7 @@ public record SatchelTooltipComponent(SatchelContentsDataComponent data) impleme
         if (!this.data.stacks().isEmpty()) {
             int seed = 1;
             for (int i = 0; i < this.data.stacks().size(); i++) {
-                drawItem(seed, x - 2 + i * 24, y, this.data.stacks(), seed, textRenderer, drawContext);
+                drawItem(data, seed, x - 2 + i * 24, y, this.data.stacks(), seed, textRenderer, drawContext);
                 seed++;
             }
             y += 24;
@@ -82,9 +82,9 @@ public record SatchelTooltipComponent(SatchelContentsDataComponent data) impleme
         this.drawProgressBar(x, y, textRenderer, drawContext);
     }
 
-    public static void drawItem(int index, int x, int y, List<ItemStack> stacks, int seed, TextRenderer textRenderer, DrawContext drawContext) {
+    public static void drawItem(SatchelContentsDataComponent data, int index, int x, int y, List<ItemStack> stacks, int seed, TextRenderer textRenderer, DrawContext drawContext) {
         int slotIndex = index - 1;
-        boolean isSlotSelected = slotIndex == SatchelContentsDataComponent.selectedSlotIndex;
+        boolean isSlotSelected = slotIndex == data.selectedSlotIndex();
         ItemStack itemStack = stacks.get(slotIndex);
 
         Identifier slotTexture = isSlotSelected ? BUNDLE_SLOT_HIGHLIGHT_BACK_TEXTURE : BUNDLE_SLOT_BACKGROUND_TEXTURE;

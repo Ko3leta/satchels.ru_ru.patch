@@ -17,7 +17,7 @@ import net.rose.satchels.client.overlay.SatchelUseInventoryHudElement;
 import net.rose.satchels.client.tooltip.SatchelTooltipComponent;
 import net.rose.satchels.common.Satchels;
 import net.rose.satchels.common.data_component.SatchelContentsDataComponent;
-import net.rose.satchels.common.networking.SatchelSelectedSlotS2CPayload;
+import net.rose.satchels.common.networking.SetInspectedItemStackS2C;
 
 public class SatchelsClient implements ClientModInitializer {
     @Override
@@ -29,7 +29,7 @@ public class SatchelsClient implements ClientModInitializer {
 
         HudElementRegistry.addLast(Satchels.id("satchel_use_inventory"), new SatchelUseInventoryHudElement());
 
-        ClientPlayNetworking.registerGlobalReceiver(SatchelSelectedSlotS2CPayload.ID, SatchelSelectedSlotS2CPayload::receive);
+        ClientPlayNetworking.registerGlobalReceiver(SetInspectedItemStackS2C.ID, SetInspectedItemStackS2C::receive);
 
         ItemModelTypes.ID_MAPPER.put(Satchels.id("satchel/selected_item"), SatchelSelectedItemModel.Unbaked.CODEC);
         BooleanProperties.ID_MAPPER.put(Satchels.id("satchel/has_selected_item"), SatchelHasSelectedItemProperty.CODEC);
