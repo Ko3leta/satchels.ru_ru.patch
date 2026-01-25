@@ -1,7 +1,5 @@
 package net.rose.satchels.common.item;
 
-import net.collectively.geode.core.math;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -95,7 +93,7 @@ public class SatchelItem extends Item {
 
             SatchelContentsDataComponent.Builder builder = new SatchelContentsDataComponent.Builder(currentComponent);
             // The amount of items copied.
-            int copiedStackSize = math.min(SatchelContentsDataComponent.MAX_STACK_SIZE, slotItemStack.getCount());
+            int copiedStackSize = Math.min(SatchelContentsDataComponent.MAX_STACK_SIZE, slotItemStack.getCount());
             if (builder.add(slotItemStack.copyWithCount(copiedStackSize))) {
                 slotItemStack.decrement(copiedStackSize);
 
@@ -148,7 +146,7 @@ public class SatchelItem extends Item {
         if (!itemStackInCursor.isEmpty()) {
             SatchelContentsDataComponent.Builder builder = new SatchelContentsDataComponent.Builder(currentComponent);
             // The amount of items copied.
-            int copiedStackSize = math.min(SatchelContentsDataComponent.MAX_STACK_SIZE, itemStackInCursor.getCount());
+            int copiedStackSize = Math.min(SatchelContentsDataComponent.MAX_STACK_SIZE, itemStackInCursor.getCount());
             if (builder.add(itemStackInCursor.copyWithCount(copiedStackSize))) {
                 itemStackInCursor.decrement(copiedStackSize);
 
