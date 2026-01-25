@@ -18,7 +18,7 @@ import java.util.*;
 public record SatchelContentsDataComponent(List<ItemStack> stacks, int selectedSlotIndex, int previousSelectedSlotIndex, boolean isOpen) implements TooltipData {
     public static final SatchelContentsDataComponent DEFAULT = new SatchelContentsDataComponent(List.of(), 0, 0, false);
     /// The maximum amount of item in a single stack stored in the satchel.
-    public static final int MAX_STACK_SIZE = 3;
+    public static final int MAX_STACK_SIZE = 16;
 
     public static final Codec<SatchelContentsDataComponent> CODEC = Codec.lazyInitialized(() -> RecordCodecBuilder
             .create(instance -> instance
