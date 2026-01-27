@@ -33,6 +33,9 @@ public class LangProvider extends FabricLanguageProvider {
         translationBuilder.add(ModItems.PURPLE_SATCHEL, "Purple Satchel");
         translationBuilder.add(ModItems.MAGENTA_SATCHEL, "Magenta Satchel");
         translationBuilder.add(ModItems.PINK_SATCHEL, "Pink Satchel");
+        translationBuilder.add(ModItems.BROWN_DECREPIT_SATCHEL, "Brown Decrepit Satchel");
+        translationBuilder.add(ModItems.GREEN_DECREPIT_SATCHEL, "Green Decrepit Satchel");
+        translationBuilder.add(ModItems.PURPLE_DECREPIT_SATCHEL, "Purple Decrepit Satchel");
 
         translationBuilder.add("item.satchels.satchel.desc", "Can hold multiple items of any stack size");
     }

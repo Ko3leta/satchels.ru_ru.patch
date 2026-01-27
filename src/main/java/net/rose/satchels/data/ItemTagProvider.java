@@ -38,6 +38,15 @@ public class ItemTagProvider extends FabricTagProvider.ItemTagProvider {
                 .add(Registries.ITEM.getId(ModItems.PURPLE_SATCHEL))
                 .add(Registries.ITEM.getId(ModItems.MAGENTA_SATCHEL))
                 .add(Registries.ITEM.getId(ModItems.PINK_SATCHEL))
+                .add(Registries.ITEM.getId(ModItems.BROWN_DECREPIT_SATCHEL))
+                .add(Registries.ITEM.getId(ModItems.GREEN_DECREPIT_SATCHEL))
+                .add(Registries.ITEM.getId(ModItems.PURPLE_DECREPIT_SATCHEL))
+                .build();
+
+        getTagBuilder(ModItemTags.DECREPIT_SATCHELS)
+                .add(Registries.ITEM.getId(ModItems.BROWN_DECREPIT_SATCHEL))
+                .add(Registries.ITEM.getId(ModItems.GREEN_DECREPIT_SATCHEL))
+                .add(Registries.ITEM.getId(ModItems.PURPLE_DECREPIT_SATCHEL))
                 .build();
 
         getTagBuilder(ModItemTags.SATCHEL_EXCLUDED)

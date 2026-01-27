@@ -50,7 +50,10 @@ public class Satchels implements ModInitializer {
                     ModItems.BLUE_SATCHEL,
                     ModItems.PURPLE_SATCHEL,
                     ModItems.MAGENTA_SATCHEL,
-                    ModItems.PINK_SATCHEL
+                    ModItems.PINK_SATCHEL,
+                    ModItems.BROWN_DECREPIT_SATCHEL,
+                    ModItems.GREEN_DECREPIT_SATCHEL,
+                    ModItems.PURPLE_DECREPIT_SATCHEL
             );
         });
     }

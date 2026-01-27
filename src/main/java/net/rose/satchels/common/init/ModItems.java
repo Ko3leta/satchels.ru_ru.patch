@@ -30,6 +30,10 @@ public interface ModItems {
     Item MAGENTA_SATCHEL = registerSatchel("magenta");
     Item PINK_SATCHEL = registerSatchel("pink");
 
+    Item BROWN_DECREPIT_SATCHEL = registerSatchel("brown_decrepit");
+    Item GREEN_DECREPIT_SATCHEL = registerSatchel("green_decrepit");
+    Item PURPLE_DECREPIT_SATCHEL = registerSatchel("purple_decrepit");
+
     static Item registerSatchel(String satchelColor) {
         String identifier = satchelColor.isEmpty() ? "satchel" : satchelColor + "_satchel";
 

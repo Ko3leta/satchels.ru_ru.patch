@@ -42,6 +42,9 @@ public class ModelProvider extends FabricModelProvider {
         registerSatchel(itemModelGenerator, ModItems.PURPLE_SATCHEL);
         registerSatchel(itemModelGenerator, ModItems.MAGENTA_SATCHEL);
         registerSatchel(itemModelGenerator, ModItems.PINK_SATCHEL);
+        registerSatchel(itemModelGenerator, ModItems.BROWN_DECREPIT_SATCHEL);
+        registerSatchel(itemModelGenerator, ModItems.GREEN_DECREPIT_SATCHEL);
+        registerSatchel(itemModelGenerator, ModItems.PURPLE_DECREPIT_SATCHEL);
     }
 
     private void registerSatchel(ItemModelGenerator itemModelGenerator, Item item) {

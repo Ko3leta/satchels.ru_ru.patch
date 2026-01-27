@@ -10,6 +10,8 @@ public interface ModItemTags {
     TagKey<Item> SATCHELS = item("satchels");
     TagKey<Item> SATCHEL_EXCLUDED = item("satchel_excluded");
 
+    TagKey<Item> DECREPIT_SATCHELS = item("decrepit_satchels");
+
     private static TagKey<Item> item(String name) {
         return TagKey.of(
                 Registries.ITEM.getKey(),
