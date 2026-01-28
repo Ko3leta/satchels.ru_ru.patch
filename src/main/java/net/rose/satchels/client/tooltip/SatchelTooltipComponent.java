@@ -53,9 +53,10 @@ public record SatchelTooltipComponent(SatchelContentsDataComponent data) impleme
 
     @Override
     public void drawItems(TextRenderer textRenderer, int x, int y, int width, int height, DrawContext drawContext) {
-        drawContext.drawWrappedText(textRenderer, DESCRIPTION_TEXT, x, y, MAX_WIDTH, 0xFFFFFFFF, true);
+//        drawContext.drawWrappedText(textRenderer, DESCRIPTION_TEXT, x, y, MAX_WIDTH, 0xFFFFFFFF, true);
 
         int slotIndex = data.selectedSlotIndex();
+        drawContext.drawWrappedText(textRenderer, Text.literal("Index: " + slotIndex), x, y, MAX_WIDTH, 0xFFFFFFFF, true);
         if (slotIndex >= 0 && slotIndex < data.stacks().size()) {
             ItemStack itemStack = data.stacks().get(slotIndex);
             Text text = itemStack.getFormattedName();

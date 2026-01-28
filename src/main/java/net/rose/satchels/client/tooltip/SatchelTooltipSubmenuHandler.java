@@ -1,5 +1,6 @@
 package net.rose.satchels.client.tooltip;
 
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.tooltip.TooltipSubmenuHandler;
 import net.minecraft.client.input.Scroller;
@@ -12,6 +13,7 @@ import net.rose.satchels.common.Satchels;
 import net.rose.satchels.common.data_component.SatchelContentsDataComponent;
 import net.rose.satchels.common.init.ModDataComponents;
 import net.rose.satchels.common.init.ModItemTags;
+import net.rose.satchels.common.networking.SetSatchelSlotIndexC2S;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
 
@@ -40,6 +42,7 @@ public class SatchelTooltipSubmenuHandler implements TooltipSubmenuHandler {
 
         if (scrollAmount != 0) {
             int cycledSlotIndex = Scroller.scrollCycling(scrollAmount, component.selectedSlotIndex(), component.stacks().size());
+            ClientPlayNetworking.send(new SetSatchelSlotIndexC2S(slotId, cycledSlotIndex));
             setSlot(itemStack, component, cycledSlotIndex);
         }
 

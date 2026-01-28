@@ -1,5 +1,6 @@
 package net.rose.satchels.common.item;
 
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
@@ -12,8 +13,10 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ClickType;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -21,6 +24,7 @@ import net.minecraft.world.World;
 import net.rose.satchels.common.data_component.SatchelContentsDataComponent;
 import net.rose.satchels.common.init.ModDataComponents;
 
+import net.rose.satchels.common.networking.SetSatchelSlotIndexC2S;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -161,6 +165,7 @@ public class SatchelItem extends Item {
 
         if (clickType == ClickType.RIGHT) {
             SatchelContentsDataComponent.Builder builder = new SatchelContentsDataComponent.Builder(currentComponent);
+            user.sendMessage(Text.literal("Selected Slot Index: " + builder.selectedSlotIndex()).formatted(user.getEntityWorld().isClient() ? Formatting.YELLOW : Formatting.AQUA), false);
             Optional<ItemStack> removed = builder.removeCurrent();
             if (removed.isPresent()) {
                 cursorStackReference.set(removed.get().copy());
@@ -235,6 +240,7 @@ public class SatchelItem extends Item {
 
             if (!builder.isOpen()) {
                 Optional<ItemStack> removed = builder.removeCurrent();
+                user.sendMessage(Text.literal("Selected Slot Index: " + builder.selectedSlotIndex()).formatted(user.getEntityWorld().isClient() ? Formatting.YELLOW : Formatting.AQUA), false);
                 if (removed.isPresent()) {
                     user.giveOrDropStack(removed.get().copy());
 
@@ -252,7 +258,7 @@ public class SatchelItem extends Item {
                 return ActionResult.FAIL;
             }
 
-            builder.setSelectedSlotIndex(0);
+            // builder.setSelectedSlotIndex(0);
             satchelItemStack.set(ModDataComponents.SATCHEL_CONTENTS, builder.build());
             user.setStackInHand(hand, satchelItemStack);
 

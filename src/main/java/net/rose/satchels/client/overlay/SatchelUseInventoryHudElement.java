@@ -41,7 +41,14 @@ public class SatchelUseInventoryHudElement implements HudElement {
         }
 
         SatchelContentsDataComponent component = SatchelItem.getSatchelDataComponent(itemStack);
-        if (component == null || !component.isOpen() || itemStack.isEmpty()) {
+        
+        if (component == null) {
+            return;
+        }
+
+        context.drawText(textRenderer, "Index: " + component.selectedSlotIndex(), 0, 0, 0xFFFFFFFF, true);
+
+        if (!component.isOpen() || itemStack.isEmpty()) {
             return;
         }
 
